@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'services/push_notifications.dart';
 
 void main() => runApp(const GiftApp());
 
@@ -335,19 +336,65 @@ class ArticlePage extends StatelessWidget {
 }
 
 // ==================== PAGE INFO ====================
-class InfoPage extends StatelessWidget {
+class InfoPage extends StatefulWidget {
   const InfoPage({super.key});
+
+  @override
+  State<InfoPage> createState() => _InfoPageState();
+}
+
+class _InfoPageState extends State<InfoPage> {
+  bool _chargement = false;
+  String _message = '';
+
+  Future<void> _activerNotifications() async {
+    setState(() {
+      _chargement = true;
+      _message = 'Activation des notifications...';
+    });
+
+    final resultat = await PushNotifications.subscribe();
+
+    if (!mounted) return;
+
+    setState(() {
+      _chargement = false;
+      _message = resultat;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Info & Contact")),
-      body: const Padding(
-        padding: EdgeInsets.all(16),
-        child: Text(
-          "App créée par Nancy\n\nContact : amblludivine669@free.fr",
+      appBar: AppBar(
+        title: const Text('Info & Contact'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'App créée par Nancy\n\nContact : ',
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed:
+                  _chargement ? null : _activerNotifications,
+              icon: const Icon(Icons.notifications_active),
+              label: Text(
+                _chargement
+                    ? 'Activation en cours...'
+                    : 'Activer les notifications',
+              ),
+            ),
+            const SizedBox(height: 16),
+            if (_message.isNotEmpty)
+              Text(_message),
+          ],
         ),
       ),
     );
   }
 }
+

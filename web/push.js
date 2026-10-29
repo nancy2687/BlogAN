@@ -1,4 +1,3 @@
-```javascript
 (function () {
   const VAPID_PUBLIC_KEY =
     "BA1mjRzkLHqhWgj4Xfz-Ah-qSiJoUh0Fm6x7_e03i_or_CNkcNnAKg_Wf-tFMQPUqqUOwSAHeDUFHllgCOas2SM";
@@ -69,4 +68,3 @@
     };
   };
 })();
-```

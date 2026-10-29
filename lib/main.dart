@@ -66,18 +66,20 @@ class ArticleContent {
 }
 
 class Article {
+  final String id;
   final String title;
   final List<ArticleContent> contents;
 
   const Article({
+    required this.id,
     required this.title,
     required this.contents,
   });
 }
-
 // ==================== CONTENU CADEAU ====================
 const List<Article> articles = [
   Article(
+    id: 'article-1',
     title: '1',
     contents: [
       ArticleContent(
@@ -105,6 +107,7 @@ Cette appli est un premier cadeau en soit mais t'en as d'autres et avec les indi
     ],
   ),
   Article(
+    id: 'article-2',
     title: '2',
     contents: [
       ArticleContent(
@@ -129,6 +132,7 @@ Deuxième cadeau : Je suis fait avec de la laine et je ressemble parfois à une 
     ],
   ),
   Article(
+    id: 'article-3',
     title: '3',
     contents: [
       ArticleContent(
@@ -158,6 +162,7 @@ Deuxième cadeau : Je suis fait avec de la laine et je ressemble parfois à une 
     ],
   ),
   Article(
+  id: 'article-4',
   title: '4',
   contents: [
     ArticleContent(
@@ -177,6 +182,7 @@ tu comptes toujours énormément pour moi.
   ],
 ),
 Article(
+   id: 'article-5',
     title: '5',
     contents: [
       ArticleContent(
@@ -193,6 +199,7 @@ Article(
   ),
 
 Article(
+    id: 'joyeux-anniversaire',
     title: 'Joyeux anniverssaire',
     contents:[
       ArticleContent(
@@ -214,7 +221,11 @@ class MainNavigation extends StatefulWidget {
   final VoidCallback toggleTheme;
   final bool isDark;
 
-  const MainNavigation({super.key, required this.toggleTheme, required this.isDark});
+  const MainNavigation({
+    super.key,
+    required this.toggleTheme,
+    required this.isDark,
+  });
 
   @override
   State<MainNavigation> createState() => _MainNavigationState();
@@ -222,6 +233,32 @@ class MainNavigation extends StatefulWidget {
 
 class _MainNavigationState extends State<MainNavigation> {
   int index = 0;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final articleId = Uri.base.queryParameters['article'];
+
+    if (articleId != null) {
+      final matchingArticles =
+          articles.where((article) => article.id == articleId);
+
+      if (matchingArticles.isNotEmpty) {
+        final article = matchingArticles.first;
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => ArticlePage(article: article),
+            ),
+          );
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -236,18 +273,24 @@ class _MainNavigationState extends State<MainNavigation> {
         currentIndex: index,
         onTap: (i) => setState(() => index = i),
         selectedItemColor: Colors.blueGrey,
-        unselectedItemColor: widget.isDark ? Colors.white54 : Colors.black54,
+        unselectedItemColor:
+            widget.isDark ? Colors.white54 : Colors.black54,
         backgroundColor: widget.isDark ? Colors.black : Colors.white,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Accueil"),
-          BottomNavigationBarItem(icon: Icon(Icons.info), label: "Info"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: "Accueil",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.info),
+            label: "Info",
+          ),
         ],
       ),
     );
   }
 }
-
-// ==================== PAGE D’ACCUEIL ====================
+// ====================== PAGE D’ACCUEIL ====================
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 

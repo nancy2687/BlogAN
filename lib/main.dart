@@ -240,6 +240,9 @@ class _MainNavigationState extends State<MainNavigation> {
 
     final articleId = Uri.base.queryParameters['article'];
 
+    print('URL actuelle : ${Uri.base}');
+    print('Identifiant demandé : $articleId');
+
     if (articleId != null) {
       final matchingArticles =
           articles.where((article) => article.id == articleId);

@@ -10,7 +10,7 @@ on:
         description: "Titre de la notification"
         required: true
         type: string
-        default: "BlogAN 🍍"
+        default: "BlogAN 🩵"
       message:
         description: "Message de la notification"
         required: true

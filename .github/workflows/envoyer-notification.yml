@@ -1,0 +1,62 @@
+name: Envoyer une notification BlogAN
+on:
+  workflow_dispatch:
+    inputs:
+      article_id:
+        description: "Identifiant de l'article (ex. article-3)"
+        required: true
+        type: string
+      titre:
+        description: "Titre de la notification"
+        required: true
+        type: string
+        default: "BlogAN 💙"
+      message:
+        description: "Message de la notification"
+        required: true
+        type: string
+        default: "Un nouvel article est disponible !"
+permissions:
+  contents: read
+jobs:
+  envoyer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Envoyer la notification
+        env:
+          ADMIN_TOKEN: ${{ secrets.BLOGAN_ADMIN_TOKEN }}
+          ARTICLE_ID: ${{ inputs.article_id }}
+          TITRE: ${{ inputs.titre }}
+          MESSAGE: ${{ inputs.message }}
+        run: |
+          set -euo pipefail
+          if [[ ! "$ARTICLE_ID" =~ ^[a-zA-Z0-9_-]+$ ]]; then
+            echo "Identifiant d'article invalide."
+            exit 1
+          fi
+          python3 - <<'PY'
+          import json
+          import os
+          import urllib.request
+          import urllib.error
+          payload = {
+              "title": os.environ["TITRE"],
+              "body": os.environ["MESSAGE"],
+              "url": "/BlogAN/?article=" + os.environ["ARTICLE_ID"]
+          }
+          request = urllib.request.Request(
+              "https://blogan-push.amblludivine669-996.workers.dev/send",
+              data=json.dumps(payload).encode("utf-8"),
+              headers={
+                  "Authorization": "Bearer " + os.environ["ADMIN_TOKEN"],
+                  "Content-Type": "application/json"
+              },
+              method="POST"
+          )
+          try:
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  print("Réponse du serveur :", response.read().decode("utf-8"))
+          except urllib.error.HTTPError as error:
+              print("Erreur du serveur :", error.code, error.read().decode("utf-8"))
+              raise
+          PY

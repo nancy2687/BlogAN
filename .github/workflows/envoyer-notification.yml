@@ -34,29 +34,41 @@ jobs:
             echo "Identifiant d'article invalide."
             exit 1
           fi
+          if [[ -z "$ADMIN_TOKEN" ]]; then
+            echo "Erreur : le secret BLOGAN_ADMIN_TOKEN est absent."
+            exit 1
+          fi
           python3 - <<'PY'
           import json
           import os
           import urllib.request
           import urllib.error
+          article_id = os.environ["ARTICLE_ID"]
           payload = {
               "title": os.environ["TITRE"],
               "body": os.environ["MESSAGE"],
-              "url": "/BlogAN/?article=" + os.environ["ARTICLE_ID"]
+              "url": "/BlogAN/?article=" + article_id
           }
           request = urllib.request.Request(
               "https://blogan-push.amblludivine669-996.workers.dev/send",
               data=json.dumps(payload).encode("utf-8"),
               headers={
                   "Authorization": "Bearer " + os.environ["ADMIN_TOKEN"],
-                  "Content-Type": "application/json"
+                  "Content-Type": "application/json",
+                  "User-Agent": "BlogAN-Notification/1.0"
               },
               method="POST"
           )
           try:
               with urllib.request.urlopen(request, timeout=30) as response:
-                  print("Réponse du serveur :", response.read().decode("utf-8"))
+                  result = response.read().decode("utf-8")
+                  print("Code HTTP :", response.status)
+                  print("Réponse du serveur :", result)
           except urllib.error.HTTPError as error:
-              print("Erreur du serveur :", error.code, error.read().decode("utf-8"))
+              print("Erreur HTTP :", error.code)
+              print("Réponse du serveur :", error.read().decode("utf-8"))
+              raise
+          except urllib.error.URLError as error:
+              print("Erreur de connexion :", error.reason)
               raise
           PY

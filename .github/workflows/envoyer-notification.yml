@@ -10,7 +10,7 @@ on:
         description: "Titre de la notification"
         required: true
         type: string
-        default: "BlogAN 💙"
+        default: "BlogAN 🍍"
       message:
         description: "Message de la notification"
         required: true
@@ -50,7 +50,7 @@ jobs:
               "url": "/BlogAN/?article=" + article_id
           }
           request = urllib.request.Request(
-              "https://blogan-push.amblludivine669-996.workers.dev/send",
+              "https://blogan-push.nancy2687.workers.dev/send",
               data=json.dumps(payload).encode("utf-8"),
               headers={
                   "Authorization": "Bearer " + os.environ["ADMIN_TOKEN"],

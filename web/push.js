@@ -3,7 +3,7 @@
     "BA1mjRzkLHqhWgj4Xfz-Ah-qSiJoUh0Fm6x7_e03i_or_CNkcNnAKg_Wf-tFMQPUqqUOwSAHeDUFHllgCOas2SM";
 
   const SUBSCRIBE_URL =
-    "https://blogan-push.amblludivine669-996.workers.dev/subscribe";
+    "https://blogan-push.nancy2687.workers.dev/subscribe";
 
   function base64UrlToUint8Array(base64String) {
     const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
